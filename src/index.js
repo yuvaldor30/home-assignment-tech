@@ -71,7 +71,7 @@ app.use('/api/presentations/:title/slides', (req, res, next) => {
 }, slides)
 
 // Connect to MongoDB and start the server
-async function main() {
+async function connectToDB() {
     await mongoose.connect('mongodb://localhost:27017/test')
     console.log('Connected to database...')
 }
@@ -82,5 +82,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Application listening on port ${port}...`)
-    main().catch(err => console.log(err))
+    connectToDB().catch(err => console.log(err))
 })
