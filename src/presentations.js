@@ -21,6 +21,34 @@ Presentation.syncIndexes()
     .catch(err => console.error('Error synchronizing indexes:', err))
 
 // ADD a new presentation
+/**
+ * @openapi
+ * /api/presentations:
+ *   post:
+ *     summary: Create a new presentation
+ *     requestBody:
+ *       description: Presentation object to be created
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "New Presentation"
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "John Doe"
+ *     responses:
+ *       200:
+ *         description: A new presentation was successfully created
+ *       400:
+ *         description: Invalid input
+ *       409:
+ *         description: Conflict, presentation with the given title already exists
+ */
 router.post('/', async (req, res) => {
     const { error } = validatePresentation(req.body)
     if (error) return res.status(400).send(error.details[0].message)
@@ -50,6 +78,40 @@ async function createPresentation(title, authors) {
 }
 
 // UPDATE presentation authors
+/**
+ * @openapi
+ * /api/presentations/{title}:
+ *   put:
+ *     summary: Update the authors of an existing presentation
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: Title of the presentation to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Updated authors list
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "Jane Doe"
+ *     responses:
+ *       200:
+ *         description: Presentation successfully updated
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Presentation not found
+ *       500:
+ *         description: Server error
+ */
 router.put('/:title', async (req, res) => {
     const presentation = await Presentation.findOne({ title: req.params.title })
     if (!presentation) return res.status(404).send('The presentation with the given title was not found')
@@ -84,6 +146,24 @@ async function updatePresentationAuthors(title, authors) {
 }
 
 // Delete a presentation
+/**
+ * @openapi
+ * /api/presentations/{title}:
+ *   delete:
+ *     summary: Delete a presentation
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: Title of the presentation to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Presentation successfully deleted
+ *       404:
+ *         description: Presentation not found
+ */
 router.delete('/:title', async (req, res) => {
     const result = await Presentation.deleteOne({ title: req.params.title })
     if (result.deletedCount == 0) return res.status(404).send('The presentation with the given title was not found')
@@ -92,6 +172,47 @@ router.delete('/:title', async (req, res) => {
 })
 
 // View one presentation
+/**
+ * @openapi
+ * /api/presentations/{title}:
+ *   get:
+ *     summary: Get a presentation by title
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: Title of the presentation to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Presentation found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 authors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                 slides:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       topic:
+ *                         type: string
+ *                       body:
+ *                         type: string
+ *       404:
+ *         description: Presentation not found
+ */
 router.get('/:title', async (req, res) => {
     const presentation = await Presentation.findOne({ title: req.params.title }, '-_id -__v')
     if (!presentation) return res.status(404).send('The presentation with the given title was not found')
@@ -101,6 +222,40 @@ router.get('/:title', async (req, res) => {
 })
 
 // View all presentations
+/**
+ * @openapi
+ * /api/presentations:
+ *   get:
+ *     summary: Get all presentations
+ *     responses:
+ *       200:
+ *         description: List of all presentations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                   authors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *                   slides:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         topic:
+ *                           type: string
+ *                         body:
+ *                           type: string
+ */
 router.get('/', async (req, res) => {
     const presentations = await Presentation.find({}, '-_id -__v')
     return res.json(presentations)

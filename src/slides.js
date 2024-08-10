@@ -14,6 +14,39 @@ router.use((req, res, next) => {
 })
 
 // ADD a new slide to a presentation
+/**
+ * @openapi
+ * /api/presentations/{title}/slides:
+ *   post:
+ *     summary: Add a new slide to a presentation
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: The title of the presentation to which the slide will be added
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Slide object to be added to the presentation
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               topic:
+ *                 type: string
+ *                 example: "Introduction"
+ *               body:
+ *                 type: string
+ *                 example: "This is the introduction slide."
+ *     responses:
+ *       200:
+ *         description: The slide was successfully created and added to the presentation
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Presentation not found
+ */
 router.post('/', async (req, res) => {
     const { error } = validateSlide(req.body)
     if (error) return res.status(400).send(error.details[0].message)
@@ -43,6 +76,30 @@ async function addSlideToPresentation(title, slide) {
 }
 
 // Delete a slide from a presentation by index
+/**
+ * @openapi
+ * /api/presentations/{title}/slides/{index}:
+ *   delete:
+ *     summary: Delete a slide from a presentation by index
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: The title of the presentation from which the slide will be deleted
+ *         schema:
+ *           type: string
+ *       - name: index
+ *         in: path
+ *         required: true
+ *         description: The index of the slide to delete
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: The slide was successfully deleted
+ *       404:
+ *         description: Slide or presentation not found
+ */
 router.delete('/:index', async (req, res) => {
     const title = req.title
     const presentation = await Presentation.findOne({ title })
@@ -59,6 +116,45 @@ router.delete('/:index', async (req, res) => {
 })
 
 // UPDATE a slide in a presentation by index
+/**
+ * @openapi
+ * /api/presentations/{title}/slides/{index}:
+ *   put:
+ *     summary: Update a slide in a presentation by index
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: The title of the presentation containing the slide
+ *         schema:
+ *           type: string
+ *       - name: index
+ *         in: path
+ *         required: true
+ *         description: The index of the slide to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       description: Updated slide object
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               topic:
+ *                 type: string
+ *                 example: "Updated Topic"
+ *               body:
+ *                 type: string
+ *                 example: "Updated slide body content."
+ *     responses:
+ *       200:
+ *         description: The slide was successfully updated
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Slide or presentation not found
+ */
 router.put('/:index', async (req, res) => {
     const { error } = validateSlide(req.body)
     if (error) return res.status(400).send(error.details[0].message)
