@@ -86,13 +86,4 @@ curl -X POST http://localhost:3000/api/presentations -H 'Content-Type: applicati
 curl -X POST http://localhost:3000/api/presentations/My%20Presentation/slides -H 'Content-Type: application/json' -d '{"topic": "Slide Topic", "body": "Slide Body"}'
 ```
 
-### Dependencies
-
-- **express**: Fast, unopinionated, minimalist web framework for Node.js.  
-
-- **mongoose**: Elegant MongoDB object modeling for Node.js.
-
-- **joi**: Object schema validation. 
-
-
 
