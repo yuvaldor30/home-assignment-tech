@@ -85,19 +85,10 @@ curl -X POST http://localhost:3000/api/presentations/My%20Presentation/slides -H
 ### Dependencies
 
 - **express**: Fast, unopinionated, minimalist web framework for Node.js.  
-  ```sh
-  npm install express
-  ```
-  
+
 - **mongoose**: Elegant MongoDB object modeling for Node.js.
-  ```sh
-  npm install mongoose
-  ```
-  
+
 - **joi**: Object schema validation. 
-  ```sh
-  npm install joi
-  ```
-  
+
 
 
