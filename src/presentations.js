@@ -93,15 +93,16 @@ router.delete('/:title', async (req, res) => {
 
 // View one presentation
 router.get('/:title', async (req, res) => {
-    const presentation = await Presentation.findOne({ title: req.params.title })
+    const presentation = await Presentation.findOne({ title: req.params.title }, '-_id -__v')
     if (!presentation) return res.status(404).send('The presentation with the given title was not found')
+
 
     return res.json(presentation)
 })
 
 // View all presentations
 router.get('/', async (req, res) => {
-    const presentations = await Presentation.find()
+    const presentations = await Presentation.find({}, '-_id -__v')
     return res.json(presentations)
 })
 
