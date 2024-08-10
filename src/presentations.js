@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const Joi = require("joi")
+const Joi = require('joi')
 
 const router = express.Router()
 
@@ -15,12 +15,12 @@ const presentationSchema = new mongoose.Schema({
 // Create Models
 const Presentation = mongoose.model('Presentation', presentationSchema)
 
+// Synchronize indexes
 Presentation.syncIndexes()
     .then(() => console.log('Indexes synchronized...'))
     .catch(err => console.error('Error synchronizing indexes:', err))
 
-
-// ADD
+// ADD a new presentation
 router.post('/', async (req, res) => {
     const { error } = validatePresentation(req.body)
     if (error) return res.status(400).send(error.details[0].message)
@@ -30,32 +30,31 @@ router.post('/', async (req, res) => {
     } catch (err) {
         if (err.message === 'The presentation with the given title already exists.') {
             return res.status(409).send(err.message)
-        }
-        else
+        } else {
             return res.send('Error saving presentation:', err)
+        }
     }
 
-    return res.send("A new presentation successfully created")
+    return res.send('A new presentation successfully created')
 })
 
+// Create a new presentation function
 async function createPresentation(title, authors) {
-    const presentation = new Presentation({
-        title,
-        authors
-    })
-
+    const presentation = new Presentation({ title, authors })
     try {
-        const res = await presentation.save()
+        await presentation.save()
     } catch (err) {
         if (err.code === 11000) throw new Error('The presentation with the given title already exists.')
-        else console.error('Error saving presentation:', err)
+        else console.error('Error saving presentation:', err.message)
     }
 }
 
-
-// UPDATE
+// UPDATE presentation authors
 router.put('/:title', async (req, res) => {
-    const presentationForValidation = { // Include only the fields required for validation
+    const presentation = await Presentation.findOne({ title: req.params.title })
+    if (!presentation) return res.status(404).send('The presentation with the given title was not found')
+
+    const presentationForValidation = {
         title: presentation.title,
         authors: req.body.authors
     }
@@ -72,44 +71,41 @@ router.put('/:title', async (req, res) => {
             return res.status(500).send(err.message)
     }
 
-    return res.send("Successfully updated presentation")
+    return res.send('Successfully updated presentation')
 })
 
+// Update presentation authors function
 async function updatePresentationAuthors(title, authors) {
     const presentation = await Presentation.findOne({ title })
-
-    if (!presentation)
-        throw new Error('The presentation with the given title was not found')
+    if (!presentation) throw new Error('The presentation with the given title was not found')
 
     presentation.authors = authors
     await presentation.save()
 }
 
-// DELETE
+// Delete a presentation
 router.delete('/:title', async (req, res) => {
     const result = await Presentation.deleteOne({ title: req.params.title })
+    if (result.deletedCount == 0) return res.status(404).send('The presentation with the given title was not found')
 
-    if (result.deletedCount == 0) return res.status(404).send("The presentation with the given title was not found")
-
-    return res.send("Presentation succuessfully deleted")
+    return res.send('Presentation successfully deleted')
 })
 
-// VIEW ONE
+// View one presentation
 router.get('/:title', async (req, res) => {
     const presentation = await Presentation.findOne({ title: req.params.title })
-
-    if (!presentation) return res.status(404).send("The presentation with the given title was not found")
+    if (!presentation) return res.status(404).send('The presentation with the given title was not found')
 
     return res.json(presentation)
 })
 
-// VIEW ALL
+// View all presentations
 router.get('/', async (req, res) => {
-    const presentation = await Presentation.find()
-
-    return res.json(presentation)
+    const presentations = await Presentation.find()
+    return res.json(presentations)
 })
 
+// Validate presentation function
 function validatePresentation(presentation) {
     const schema = Joi.object({
         title: Joi.string().min(3).required(),
@@ -119,4 +115,4 @@ function validatePresentation(presentation) {
     return schema.validate(presentation)
 }
 
-module.exports = { Presentation, router, presentationSchema }
+module.exports = { Presentation, router }
