@@ -52,8 +52,6 @@ npm start
 
 The server will start on port 3000. You can access the API at `http://localhost:3000`.
 
-You can copy and paste this into your `README.md` file to include just the instructions for running the app
-
 ### 5. API Endpoints
 
 #### Presentations
