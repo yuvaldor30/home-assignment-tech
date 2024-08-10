@@ -55,6 +55,9 @@ The server will start on port 3000. You can access the API at `http://localhost:
 ### 5. API Endpoints
 
 #### Presentations
+You can explore and interact with the API endpoints using Swagger. Access the Swagger UI at the following URL: [http://localhost:3000/api-docs](http://localhost:3000/api-docs/#/default/post_api_presentations)
+
+Swagger provides an interactive documentation interface where you can test the API operations directly from the browser.
 
 - **GET /**: Home route with a welcome message.
 - **POST /api/presentations**: Create a new presentation.
@@ -62,6 +65,7 @@ The server will start on port 3000. You can access the API at `http://localhost:
 - **DELETE /api/presentations/:title**: Delete a presentation by its title.
 - **GET /api/presentations/:title**: View a single presentation by its title.
 - **GET /api/presentations**: View all presentations.
+
 
 #### Slides
 
