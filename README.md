@@ -20,7 +20,7 @@ This project is a server-side service for managing presentations and their assoc
 ### 1. Clone the Repository
 
 ```sh
-git clone https://github.com/your-username/presentation-management-platform.git
+git clone https://github.com/yuvaldor30/home-assignment-tech.git
 cd presentation-management-platform
 ```
 
